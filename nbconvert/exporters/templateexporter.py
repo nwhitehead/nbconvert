@@ -9,6 +9,7 @@ from __future__ import print_function, absolute_import
 
 # Stdlib imports
 import os
+import sys
 
 # other libs/dependencies are imported at runtime
 # to move ImportErrors to runtime when the requirement is actually needed
@@ -281,7 +282,12 @@ class TemplateExporter(Exporter):
         Create the Jinja templating environment.
         """
         from jinja2 import Environment, ChoiceLoader, FileSystemLoader
-        here = os.path.dirname(os.path.realpath(__file__))
+        if getattr(sys, 'frozen', False):
+            here = os.path.join(
+                os.path.dirname(os.path.realpath(sys.executable)),
+                'nbconvert', 'templates')
+        elif __file__:
+            here = os.path.dirname(os.path.realpath(__file__))
 
         paths = self.template_path + \
             [os.path.join(here, self.default_template_path),
